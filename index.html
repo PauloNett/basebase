@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Kanban - Todos os Meses</title>
+    <style>
+        /* Mesma estilização do seu código original */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px;
+        }
+        .kanban-board {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+        }
+        .kanban-column {
+            width: 300px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .kanban-column h2 {
+            margin: 0;
+            padding: 10px;
+            text-align: center;
+            color: #fff;
+        }
+        .kanban-items {
+            padding: 10px;
+            min-height: 200px;
+            border-top: 2px solid #ddd;
+        }
+        .kanban-item {
+            background: #f9f9f9;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: grab;
+            position: relative;
+        }
+        .kanban-item button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+        .kanban-item button:hover {
+            background: darkred;
+        }
+        #january { background-color: #ff9999; }
+        #february { background-color: #ffcc99; }
+        #march { background-color: #ffff99; }
+        #april { background-color: #ccff99; }
+        #may { background-color: #99ff99; }
+        #june { background-color: #99ffcc; }
+        #july { background-color: #99ffff; }
+        #august { background-color: #99ccff; }
+        #september { background-color: #9999ff; }
+        #october { background-color: #cc99ff; }
+        #november { background-color: #ff99cc; }
+        #december { background-color: #ff99ff; }
+        .form-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-container input, .form-container select {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Painel Kanban - Embarques do Ano</h1>
+    <div class="form-container">
+        <input type="text" id="name" placeholder="Nome">
+        <input type="text" id="phone" placeholder="Telefone" oninput="formatPhone(this)">
+        <input type="text" id="locator" placeholder="Localizador">
+        <input type="text" id="destination" placeholder="Destino">
+        <select id="month">
+            <option value="january">Janeiro</option>
+            <option value="february">Fevereiro</option>
+            <option value="march">Março</option>
+            <option value="april">Abril</option>
+            <option value="may">Maio</option>
+            <option value="june">Junho</option>
+            <option value="july">Julho</option>
+            <option value="august">Agosto</option>
+            <option value="september">Setembro</option>
+            <option value="october">Outubro</option>
+            <option value="november">Novembro</option>
+            <option value="december">Dezembro</option>
+        </select>
+        <button onclick="addNewCard()">Adicionar</button>
+    </div>
+    <div class="kanban-board">
+        <!-- Colunas do Kanban -->
+        <div class="kanban-column" id="january">
+            <h2>Janeiro</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="february">
+            <h2>Fevereiro</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="march">
+            <h2>Março</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="april">
+            <h2>Abril</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="may">
+            <h2>Maio</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="june">
+            <h2>Junho</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="july">
+            <h2>Julho</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="august">
+            <h2>Agosto</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="september">
+            <h2>Setembro</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="october">
+            <h2>Outubro</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="november">
+            <h2>Novembro</h2>
+            <div class="kanban-items"></div>
+        </div>
+        <div class="kanban-column" id="december">
+            <h2>Dezembro</h2>
+            <div class="kanban-items"></div>
+        </div>
+    </div>
+    <script>
+        const SUPABASE_URL = "https://eschchhuqtmsjslnpinm.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzY2hjaGh1cXRtc2pzbG5waW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI1NzcwMDYsImV4cCI6MjA0ODE1MzAwNn0.BsmZyN-J8Jg-Lzb-2JNwUSZDnb-CZgHtKav1_Z_2k70"; // Chave pública
+
+        async function saveToDatabase(name, phone, locator, destination, month) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/kanban_data`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`
+                },
+                body: JSON.stringify({ name, phone, locator, destination, month })
+            });
+            if (response.ok) {
+                console.log("Dados salvos no Supabase.");
+            } else {
+                console.error("Erro ao salvar dados", await response.text());
+            }
+        }
+
+        async function addNewCard() {
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const locator = document.getElementById("locator").value;
+            const destination = document.getElementById("destination").value;
+            const month = document.getElementById("month").value;
+
+            if (name && phone && locator && destination) {
+                const column = document.getElementById(month);
+                const newCard = document.createElement("div");
+                newCard.className = "kanban-item";
+                newCard.innerHTML = `
+                    <strong>${name}</strong><br>
+                    Tel: ${phone}<br>
+                    Localizador: ${locator}<br>
+                    Destino: ${destination}
+                    <button onclick="deleteCard(this)">X</button>
+                `;
+                column.querySelector(".kanban-items").appendChild(newCard);
+
+                await saveToDatabase(name, phone, locator, destination, month);
+
+                document.getElementById("name").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("locator").value = "";
+                document.getElementById("destination").value = "";
+            } else {
+                alert("Preencha todos os campos!");
+            }
+        }
+
+        function deleteCard(button) {
+            const card = button.parentElement;
+            card.remove();
+           }
+    </script>
+</body>
+</html>
